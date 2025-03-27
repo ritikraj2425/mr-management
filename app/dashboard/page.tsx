@@ -108,7 +108,7 @@ export default function DashboardPage() {
           {groups.map((group) => (
             <GroupCard key={group.id} group={group} />
           ))}
-          <Card className="flex h-[180px] flex-col items-center justify-center border-dashed">
+          <Card className="flex h-full flex-col items-center justify-center border-dashed">
             <Link
               href="/dashboard/groups/new"
               className="flex h-full w-full flex-col items-center justify-center rounded-md p-6 text-center hover:bg-muted/50"
@@ -120,7 +120,7 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-4 ">
         <div className="flex items-center justify-between">
           <h3 className="text-xl font-semibold">MRs For You To Merge</h3>
           <Button variant="outline" asChild>

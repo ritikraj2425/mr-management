@@ -22,7 +22,7 @@ export default function DashboardSidebar() {
     <SidebarProvider>
       <Sidebar>
         <SidebarHeader className="flex h-16 justify-center items-center bg-white z-50 border-b px-4">
-          <Link href="/dashboard" className="flex items-center gap-2 font-bold">
+          <Link href="/" className="flex items-center gap-2 font-bold">
             <GitMerge className="h-6 w-6 text-primary" />
             <span className="text-xl ">MergeFlow</span>
           </Link>
