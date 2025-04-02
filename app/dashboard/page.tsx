@@ -73,11 +73,12 @@ export default function DashboardPage() {
   if (!authContext) {
     throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
-  const { isAuthenticated, userData, groupData, organizationData , mrData, assignedMRs} = authContext;
+  const {  userData, mrData, assignedMRs, userGroups} = authContext;
   const pendingMRsCount = (mrData as MR[])?.filter(mr => mr.status === "pending").length;
   const mergedMRsCount = (mrData as MR[])?.filter(mr => mr.status === "merged").length;
 
 
+console.log(userGroups,"fsdfs")
 
   return (
     <div className="space-y-8">
@@ -129,7 +130,7 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {groupData?.map((group: any) => (
+          {userGroups?.slice(0,2)?.map((group: any) => (
             <GroupCard key={group._id} group={group} />
           ))}
           <Card className="flex h-full flex-col items-center justify-center border-dashed">
@@ -143,6 +144,8 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
+
+
 
       <div className="space-y-4 ">
         <div className="flex items-center justify-between">

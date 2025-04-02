@@ -1,11 +1,8 @@
 'use client'
 import Link from "next/link"
 import { PlusCircle, UserPlus } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { MergeRequestList } from "@/components/merge-request-list"
 import { MembersList } from "@/components/members-list"
 import { useContext } from "react"
 import { AuthContext } from "@/hooks/use-context"
@@ -19,10 +16,10 @@ export default function OrganizationDashboardPage() {
     throw new Error("AuthContext is not provided. Wrap your component inside <AuthProvider>.");
   }
 
-  const { organizationData } = authContext;
+  const { organizationData, userData } = authContext;
 
-  if(!organizationData){
-    return <Loading/>
+  if (!organizationData) {
+    return <Loading />
   }
 
   const members = organizationData?.members
@@ -34,9 +31,15 @@ export default function OrganizationDashboardPage() {
           <h2 className="text-3xl font-bold tracking-tight">Organization Dashboard: {organizationData?.orgName}</h2>
           <p className="text-muted-foreground">Your Organization have {organizationData?.members?.length} members</p>
         </div>
-        <Button asChild>
-          <Link href="/dashboard/organization/settings">Manage Organization</Link>
-        </Button>
+        {
+          userData?.isAdmin ?
+            <Button asChild>
+              <Link href="/dashboard/organization/settings">Manage Organization</Link>
+            </Button>
+            :
+            <></>
+        }
+
       </div>
 
       <Tabs defaultValue="members" className="space-y-4">
@@ -47,14 +50,19 @@ export default function OrganizationDashboardPage() {
         <TabsContent value="members" className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-xl font-semibold">Organization Members</h3>
-            <Button asChild>
-              <Link href="/dashboard/organization/invite">
-                <UserPlus className="mr-2 h-4 w-4" />
-                Invite Member
-              </Link>
-            </Button>
+            {
+              userData?.isAdmin ?
+                <Button asChild>
+                  <Link href="/dashboard/organization/invite">
+                    <UserPlus className="mr-2 h-4 w-4" />
+                    Invite Member
+                  </Link>
+                </Button>
+                :
+                <></>
+            }
           </div>
-          <MembersList members={members} />
+          <MembersList members={members} isAdmin={userData.isAdmin} />
         </TabsContent>
       </Tabs>
     </div>

@@ -13,6 +13,7 @@ interface AuthContextType {
     mrData: any;
     assignedMRs: any;
     myMrs: any;
+    userGroups: any;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -31,6 +32,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [mrData, setMrData] = useState<any>(null);
     const [assignedMRs, setAssignedMRs] = useState<any>(null)
     const [myMrs, setMyMrs] = useState<any>(null)
+    const [userGroups, setUserGroups] = useState<any>(null)
 
     // Check auth status and load tokens on mount
     useEffect(() => {
@@ -119,6 +121,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                         setOrganizationData(orgResponse.data.data); // Use .data
                     }
 
+                    const userGroupsRes = await axios.get(`${backendUrl}/group/get/user`, {
+                        headers: {
+                            "Content-Type": "application/json",
+                            "apikey": process.env.NEXT_PUBLIC_API_KEY || "",
+                            "jwttoken": jwtToken,
+                            "refreshtoken": refreshToken,
+                        },
+                        withCredentials: true,
+                    });
+                    if (userGroupsRes.status === 200) {
+                        setUserGroups(userGroupsRes.data.data); // Use .data
+                    }
+
                     // Fetch group data
                     const groupResponse = await axios.get(`${backendUrl}/group/get`, {
                         headers: {
@@ -181,7 +196,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 groupData,
                 mrData,
                 assignedMRs,
-                myMrs
+                myMrs,
+                userGroups
             }}
         >
             {children}

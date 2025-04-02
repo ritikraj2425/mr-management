@@ -23,7 +23,7 @@ interface MembersListProps {
   members: Member[]
 }
 
-export function MembersList({ members }: MembersListProps) {
+export function MembersList({ members, isAdmin }: { members: Member[]; isAdmin: boolean }) {
   return (
     <div className="rounded-md border">
       <Table>
@@ -32,7 +32,11 @@ export function MembersList({ members }: MembersListProps) {
             <TableHead>Name</TableHead>
             <TableHead>Email</TableHead>
             <TableHead>Role</TableHead>
-            <TableHead className="w-[80px]">Actions</TableHead>
+            {
+              isAdmin ?
+                <TableHead className="w-[80px]">Actions</TableHead>
+                : <></>
+            }
           </TableRow>
         </TableHeader>
         <TableBody>
@@ -49,22 +53,27 @@ export function MembersList({ members }: MembersListProps) {
               </TableCell>
               <TableCell>{member?.email}</TableCell>
               <TableCell>{member?.isAdmin ? "Admin" : "Member"}</TableCell>
-              <TableCell>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon">
-                      <MoreHorizontal className="h-4 w-4" />
-                      <span className="sr-only">Actions</span>
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem>Edit Role</DropdownMenuItem>
-                    <DropdownMenuItem>Remove from Group</DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-              </TableCell>
+              {isAdmin ?
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" size="icon">
+                        <MoreHorizontal className="h-4 w-4" />
+                        <span className="sr-only">Actions</span>
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem>Edit Role</DropdownMenuItem>
+                      <DropdownMenuItem>Remove from Group</DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+                :
+                <></>
+              }
+
             </TableRow>
           ))}
         </TableBody>

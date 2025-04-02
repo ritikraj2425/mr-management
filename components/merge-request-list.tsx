@@ -61,7 +61,7 @@ export function MergeRequestList({ mergeRequests }: MergeRequestListProps) {
                 <TableCell>{formatDate(mr?.createdAt)}</TableCell>
                 <TableCell>
                   <Button variant="ghost" size="icon" asChild>
-                    <Link href={mr?.link}  >
+                    <Link href={mr?.link}  target="_blank" rel="noopener noreferrer" >
                       <Eye className="h-4 w-4" />
                       <span className="sr-only">View</span>
                     </Link>

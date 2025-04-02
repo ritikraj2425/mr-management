@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 
 interface GroupCardProps {
   group: {
-    id: string
+    _id: string
     name: string
     description: string
     pendingMRs: number
@@ -37,7 +37,7 @@ export function GroupCard({ group }: GroupCardProps) {
       </CardContent>
       <CardFooter>
         <Button variant="outline" className="w-full" asChild>
-          <Link href={`/dashboard/groups/${group.id}`}>View Group</Link>
+          <Link href={`/dashboard/groups/${group._id}`}>View Group</Link>
         </Button>
       </CardFooter>
     </Card>

@@ -13,7 +13,6 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   if (!themeContext) {
-    // Handle the case where ThemeContext is not provided
     throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
   const { isAuthenticated } = themeContext;
