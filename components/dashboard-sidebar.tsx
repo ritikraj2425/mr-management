@@ -14,9 +14,17 @@ import {
   SidebarMenuItem,
   SidebarProvider,
 } from "@/components/ui/sidebar"
+import { useContext } from "react"
+import { AuthContext } from "@/hooks/use-context"
 
 export default function DashboardSidebar() {
   const pathname = usePathname()
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
+  }
+  const { isAuthenticated,userData,groupData,organizationData } = authContext;
+  
 
   return (
     <SidebarProvider>
@@ -24,7 +32,7 @@ export default function DashboardSidebar() {
         <SidebarHeader className="flex h-16 justify-center items-center bg-white z-50 border-b px-4">
           <Link href="/" className="flex items-center gap-2 font-bold">
             <GitMerge className="h-6 w-6 text-primary" />
-            <span className="text-xl ">MergeFlow</span>
+            <span className="text-xl ">{organizationData?.orgName}</span>
           </Link>
         </SidebarHeader>
         <SidebarContent>
@@ -73,7 +81,7 @@ export default function DashboardSidebar() {
               <SidebarMenuButton asChild isActive={pathname === "/dashboard/merge-requests/new"}>
                 <Link href="/dashboard/merge-requests/new">
                   <PlusCircle className="h-4 w-4" />
-                  <span>Create MR</span>
+                  <span>Create MR/PR</span>
                 </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>

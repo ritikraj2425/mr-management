@@ -11,7 +11,8 @@ interface GroupCardProps {
     description: string
     pendingMRs: number
     totalMRs: number
-    members: number
+    members: any
+    MRs: any
   }
 }
 
@@ -26,11 +27,11 @@ export function GroupCard({ group }: GroupCardProps) {
         <div className="mt-4 grid grid-cols-2 gap-2">
           <div className="flex items-center gap-2">
             <GitMerge className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{group.pendingMRs} pending MRs</span>
+            <span className="text-sm text-muted-foreground">{group?.MRs?.length} MRs</span>
           </div>
           <div className="flex items-center gap-2">
             <Users className="h-4 w-4 text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">{group.members} members</span>
+            <span className="text-sm text-muted-foreground">{group?.members?.length} members</span>
           </div>
         </div>
       </CardContent>

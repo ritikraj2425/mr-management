@@ -1,10 +1,22 @@
+'use client'
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowRight, CheckCircle, GitMerge, Users } from "lucide-react"
-
+import logout from "@/utils/logout"
 import { Button } from "@/components/ui/button"
+import { useContext, useState } from "react"
+import { AuthContext } from "@/hooks/use-context"
+import { CreateOrganizationModal } from "@/components/create-organization"
 
 export default function Home() {
+  const themeContext = useContext(AuthContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (!themeContext) {
+    // Handle the case where ThemeContext is not provided
+    throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
+  }
+  const { isAuthenticated } = themeContext;
   return (
     <div className="flex min-h-screen flex-col">
       {/* Header */}
@@ -15,23 +27,41 @@ export default function Home() {
             <span className="text-xl">MergeFlow</span>
           </Link>
           <nav className="flex gap-4 sm:gap-6">
-            <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Login
-            </Link>
-            <Link href="/signup" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              Signup
-            </Link>
-            <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">
-              About
-            </Link>
+            {
+              !isAuthenticated ?
+                <>
+                  <Link href="/login" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    Login
+                  </Link>
+                  <Link href="/signup" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    Signup
+                  </Link>
+                  <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    About
+                  </Link>
+                </>
+                :
+                <>
+                  <Link href="/dashboard" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    Dashboard
+                  </Link>
+                  <Link href="/about" className="text-sm font-medium text-muted-foreground hover:text-foreground">
+                    About
+                  </Link>
+                  <div onClick={logout} className="text-sm cursor-pointer font-medium text-muted-foreground hover:text-foreground">
+                    Logout
+                  </div>
+                </>
+            }
+
           </nav>
         </div>
       </header>
 
       <main className="flex-1">
         {/* Hero Section */}
-        <section className="bg-background py-12 md:py-16 lg:py-20">
-          <div className="p-1 grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-10">
+        <section className="bg-background py-12 md:py-16 lg:py-20 " >
+          <div className="p-1 grid items-center gap-6 px-4 md:px-6 lg:grid-cols-2 lg:gap-32">
             <div className="space-y-4">
               <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl lg:text-6xl">
                 Empower Your Organization with Seamless MR Management
@@ -41,12 +71,30 @@ export default function Home() {
                 intuitive merge request platform.
               </p>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                <Button asChild size="lg">
-                  <Link href="/signup">Sign Up</Link>
-                </Button>
-                <Button variant="outline" size="lg">
-                  <Link href="/about">Learn More</Link>
-                </Button>
+                {
+                  !isAuthenticated ?
+                    <>
+                      <Button asChild size="lg">
+                        <Link href="/signup">Sign Up</Link>
+                      </Button>
+                      <Button variant="outline" size="lg">
+                        <Link href="/about">Learn More</Link>
+                      </Button>
+                    </>
+                    :
+                    <>
+                      <Button asChild size="lg">
+                        <Link href="/dashboard">Dashboard</Link>
+                      </Button>
+                      <Button onClick={() => setIsModalOpen(true)} variant="outline" size="lg">
+                        Create Organization
+                      </Button>
+                      <CreateOrganizationModal
+                        isOpen={isModalOpen}
+                        onClose={() => setIsModalOpen(false)}
+                      />
+                    </>
+                }
               </div>
             </div>
             <div className="flex justify-center">
@@ -55,7 +103,7 @@ export default function Home() {
                 width={500}
                 height={400}
                 alt="MR Management Platform"
-                className="rounded-lg object-cover"
+                className="rounded-xl object-cover shadow-md"
                 priority
               />
             </div>

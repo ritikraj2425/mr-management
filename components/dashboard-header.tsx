@@ -11,6 +11,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import logout from "@/utils/logout"
 
 export function DashboardHeader() {
   return (
@@ -44,7 +45,7 @@ export function DashboardHeader() {
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/logout">Logout</Link>
+              <div onClick={logout}>Logout</div>
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

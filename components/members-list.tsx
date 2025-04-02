@@ -13,11 +13,10 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 
 interface Member {
-  id: string
+  _id: string
   name: string
   email: string
-  role: string
-  avatar: string
+  isAdmin: string
 }
 
 interface MembersListProps {
@@ -38,18 +37,18 @@ export function MembersList({ members }: MembersListProps) {
         </TableHeader>
         <TableBody>
           {members.map((member) => (
-            <TableRow key={member.id}>
+            <TableRow key={member?._id}>
               <TableCell>
                 <div className="flex items-center gap-2">
                   <Avatar className="h-8 w-8">
-                    <AvatarImage src={member.avatar} alt={member.name} />
+                    <AvatarImage src='/placeholder.svg?height=40&width=40' alt={member.name} />
                     <AvatarFallback>{member.name.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <span className="font-medium">{member.name}</span>
                 </div>
               </TableCell>
-              <TableCell>{member.email}</TableCell>
-              <TableCell>{member.role}</TableCell>
+              <TableCell>{member?.email}</TableCell>
+              <TableCell>{member?.isAdmin ? "Admin" : "Member"}</TableCell>
               <TableCell>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>

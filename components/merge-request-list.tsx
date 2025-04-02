@@ -4,14 +4,16 @@ import { Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import Loading from "./ui/loading"
 
 interface MergeRequest {
-  id: string
+  _id: string
   title: string
-  creator: string
-  group: string
+  creator: any
+  groupId: any
   status: string
   createdAt: string
+  link: string
 }
 
 interface MergeRequestListProps {
@@ -25,6 +27,10 @@ export function MergeRequestList({ mergeRequests }: MergeRequestListProps) {
       month: "short",
       day: "numeric",
     })
+  }
+
+  if(!mergeRequests){
+    return <Loading/>
   }
 
   return (
@@ -43,19 +49,19 @@ export function MergeRequestList({ mergeRequests }: MergeRequestListProps) {
         <TableBody>
           {mergeRequests.length > 0 ? (
             mergeRequests.map((mr) => (
-              <TableRow key={mr.id}>
+              <TableRow key={mr?._id}>
                 <TableCell className="font-medium">{mr.title}</TableCell>
-                <TableCell>{mr.creator}</TableCell>
-                <TableCell>{mr.group}</TableCell>
+                <TableCell>{mr.creator?.name}</TableCell>
+                <TableCell>{mr?.groupId?.name}</TableCell>
                 <TableCell>
                   <Badge variant={mr.status === "pending" ? "outline" : "default"}>
-                    {mr.status === "pending" ? "Pending" : "Merged"}
+                    {mr?.status}
                   </Badge>
                 </TableCell>
-                <TableCell>{formatDate(mr.createdAt)}</TableCell>
+                <TableCell>{formatDate(mr?.createdAt)}</TableCell>
                 <TableCell>
                   <Button variant="ghost" size="icon" asChild>
-                    <Link href={`/dashboard/merge-requests/${mr.id}`}>
+                    <Link href={mr?.link}  >
                       <Eye className="h-4 w-4" />
                       <span className="sr-only">View</span>
                     </Link>

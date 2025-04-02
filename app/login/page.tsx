@@ -1,15 +1,14 @@
 "use client"
-
 import type React from "react"
-
 import { useState } from "react"
 import Link from "next/link"
 import { GitMerge } from "lucide-react"
-
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { toast } from "@/hooks/use-toast"
+import axios from "axios"
 
 export default function LoginPage() {
   const [email, setEmail] = useState("")
@@ -19,14 +18,41 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
-
-    // Simulate login request
-    setTimeout(() => {
-      setIsLoading(false)
-      // Redirect to dashboard after successful login
-      window.location.href = "/dashboard"
-    }, 1500)
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/auth/login`;
+      const response = await axios.post(url, {
+        email,
+        password,
+      }, {
+        headers: {
+          "Content-Type": "application/json",
+          "apikey": process.env.NEXT_PUBLIC_API_KEY || "",
+        },
+        withCredentials: true,
+      });
+  
+      if (response.status === 200) {
+        toast({ title: "Success", description: response.data.message });
+        localStorage.setItem("jwtToken", response.data.jwtToken);
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+        // Optionally, refresh auth status or navigate to dashboard
+        setTimeout(() => {
+          setIsLoading(false);
+          window.location.href = "/dashboard";
+        }, 2000);
+      } else {
+        toast({ title: "Error", description: response.data.message });
+        setIsLoading(false);
+      }
+  
+    } catch (error) {
+      console.error("Signup Failed:", error);
+      toast({ title: "Error", description: "Something went wrong." });
+      setIsLoading(false);
+    }
+    
   }
+
 
   return (
     <div className="p-1 flex h-screen w-screen flex-col items-center justify-center">
