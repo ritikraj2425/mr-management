@@ -21,7 +21,6 @@ export default function OrganizationDashboardPage() {
   if (!organizationData) {
     return <Loading />
   }
-
   const members = organizationData?.members
 
   return (

@@ -2,7 +2,7 @@
 
 import type React from "react"
 
-import { useState } from "react"
+import { useContext, useState } from "react"
 import Link from "next/link"
 import { ArrowLeft } from "lucide-react"
 
@@ -12,6 +12,11 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { AuthContext } from "@/hooks/use-context"
+import AutoCompleteSearch, { Member } from "./autoCompleteSearch"
+import { toast } from "@/hooks/use-toast"
+import axios from "axios"
+import { useRouter } from "next/navigation"
 
 // Mock data for groups
 const groups = [
@@ -23,38 +28,74 @@ const groups = [
 
 export default function CreateMergeRequestPage() {
   const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
   const [group, setGroup] = useState("")
-  const [links, setLinks] = useState([{ url: "", title: "" }])
+  const [link, setLink] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [selectedMembers, setSelectedMembers] = useState<any>([]);
+  const router = useRouter();
 
-  const handleAddLink = () => {
-    setLinks([...links, { url: "", title: "" }])
+  const authContext = useContext(AuthContext);
+  if (!authContext) {
+    throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
+  const { organizationData, userGroups, jwtToken, refreshToken } = authContext;
 
-  const handleLinkChange = (index: number, field: "url" | "title", value: string) => {
-    const updatedLinks = [...links]
-    updatedLinks[index][field] = value
-    setLinks(updatedLinks)
-  }
-
-  const handleRemoveLink = (index: number) => {
-    const updatedLinks = [...links]
-    updatedLinks.splice(index, 1)
-    setLinks(updatedLinks)
-  }
-
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+    if (!title || !group || !link || !selectedMembers) {
+      toast({ title: "Error", description: "All fields are required" });
+      setIsSubmitting(false);
+      return;
+    }
+    console.log(title,group,link,selectedMembers)
 
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false)
-      // Redirect to dashboard after successful creation
-      window.location.href = "/dashboard/merge-requests"
-    }, 1500)
+    try {
+      const url = `${process.env.NEXT_PUBLIC_API_URL}/mr/create`;
+      const response = await axios.post(
+        url,
+        {
+          title: title
+          ,reviewerEmails: selectedMembers
+          ,groupId: group
+          ,link: link
+        },
+        {
+          headers: {
+            "Content-Type": "application/json",
+            "apikey": process.env.NEXT_PUBLIC_API_KEY || "",
+            "jwttoken": jwtToken || "",
+            "refreshtoken": refreshToken || "",
+          },
+          withCredentials: true,
+        }
+      );
+
+      if (response.status == 201) {
+        setTimeout(() => {
+          setIsSubmitting(false);
+          router.push("/dashboard/my-merge-requests");
+        }, 2000);
+        toast({ title: "Success", description: response.data.message });
+      } else {
+        toast({ title: "Error", description: response.data.error });
+        setIsSubmitting(false);
+      }
+
+    } catch (error: any) {
+      console.error("Create Organization Failed:", error); 
+      if (error.response && error.response.data) {
+        toast({
+          title: "Error",
+          description: error.response.data.error || "Something went wrong.",
+        });
+      } else {
+        toast({ title: "Error", description: "Unexpected error occurred." });
+      }
+      setIsSubmitting(false);
+    }
   }
+
 
   return (
     <div className="space-y-6">
@@ -84,28 +125,19 @@ export default function CreateMergeRequestPage() {
                 required
               />
             </div>
-
             <div className="grid gap-2">
-              <Label htmlFor="description">Description</Label>
-              <Textarea
-                id="description"
-                placeholder="Provide details about the changes"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="min-h-[120px]"
-              />
+              <Label htmlFor="title">Assign to</Label>
+              <AutoCompleteSearch members={organizationData.members} onSelectMembers={setSelectedMembers} />
             </div>
-
-            <div className="grid gap-2">
+            <div>
               <Label htmlFor="group">Group</Label>
               <Select value={group} onValueChange={setGroup} required>
                 <SelectTrigger id="group">
                   <SelectValue placeholder="Select a group" />
                 </SelectTrigger>
                 <SelectContent>
-                  {groups.map((group) => (
-                    <SelectItem key={group.id} value={group.id}>
+                  {userGroups?.map((group: any) => (
+                    <SelectItem key={group._id} value={group._id}>
                       {group.name}
                     </SelectItem>
                   ))}
@@ -115,33 +147,14 @@ export default function CreateMergeRequestPage() {
 
             <div className="grid gap-2">
               <div className="flex items-center justify-between">
-                <Label>Links (Optional)</Label>
-                <Button type="button" variant="outline" size="sm" onClick={handleAddLink}>
-                  Add Link
-                </Button>
+                <Label>Link</Label>
               </div>
-
-              {links.map((link, index) => (
-                <div key={index} className="grid gap-2">
-                  <div className="flex items-center gap-2">
-                    <Input
-                      placeholder="URL (e.g., GitHub PR)"
-                      value={link.url}
-                      onChange={(e) => handleLinkChange(index, "url", e.target.value)}
-                    />
-                    <Input
-                      placeholder="Title"
-                      value={link.title}
-                      onChange={(e) => handleLinkChange(index, "title", e.target.value)}
-                    />
-                    {links.length > 1 && (
-                      <Button type="button" variant="ghost" size="sm" onClick={() => handleRemoveLink(index)}>
-                        Remove
-                      </Button>
-                    )}
-                  </div>
-                </div>
-              ))}
+              <div className="grid gap-2">
+                <Input
+                  placeholder="URL (e.g., GitHub PR)"
+                  onChange={(e) => setLink(e.target.value)}
+                />
+              </div>
             </div>
           </CardContent>
           <CardFooter className="flex justify-between">

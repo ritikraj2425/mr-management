@@ -78,7 +78,6 @@ export default function DashboardPage() {
   const mergedMRsCount = (mrData as MR[])?.filter(mr => mr.status === "merged").length;
 
 
-console.log(userGroups,"fsdfs")
 
   return (
     <div className="space-y-8">

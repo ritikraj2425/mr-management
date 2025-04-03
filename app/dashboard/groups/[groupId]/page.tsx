@@ -75,13 +75,13 @@ export default function GroupDashboardPage() {
         <div className="space-y-8">
             <div className="flex items-center justify-between">
                 <div>
-                    <h2 className="text-3xl font-bold tracking-tight">Organization Dashboard: {group?.name}</h2>
+                    <h2 className="text-3xl font-bold tracking-tight">Group Dashboard: {group?.name}</h2>
                     <p className="text-muted-foreground">Your group has {group?.members?.length} members</p>
                 </div>
                 {
                     userData.isAdmin ?
                         <Button asChild>
-                            <Link href="/dashboard/organization/settings">Manage Organization</Link>
+                            <Link href={`/dashboard/group/${groupId}/settings`}>Manage Group</Link>
                         </Button>
                         :
                         <></>
