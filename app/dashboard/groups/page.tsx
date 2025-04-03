@@ -26,11 +26,19 @@ export default function Groups() {
             <div className="flex items-center justify-between">
                 <h3 className="text-xl font-semibold">Your Groups</h3>
             </div>
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {userGroups?.map((group: any) => (
-                    <GroupCard key={group._id} group={group} />
-                ))}
-            </div>
+            {
+                userGroups ?
+                    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        {userGroups?.map((group: any) => (
+                            <GroupCard key={group._id} group={group} />
+                        ))}
+                    </div>
+                    :
+                    <>
+                        No group found
+                    </>
+            }
+
         </div>
     </>
 }

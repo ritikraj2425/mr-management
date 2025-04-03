@@ -8,54 +8,7 @@ import { MergeRequestList } from "@/components/merge-request-list"
 import { useContext } from "react"
 import { AuthContext } from "@/hooks/use-context"
 
-// Mock data for groups
-// const groups = [
-//   {
-//     id: "1",
-//     name: "Frontend Team",
-//     description: "UI/UX and frontend development team",
-//     pendingMRs: 5,
-//     totalMRs: 42,
-//     members: 8,
-//   },
-//   {
-//     id: "2",
-//     name: "Backend Team",
-//     description: "API and database development team",
-//     pendingMRs: 3,
-//     totalMRs: 37,
-//     members: 6,
-//   },
-// ]
-
-// Mock data for merge requests
-const mergeRequests = [
-  {
-    id: "mr-1",
-    title: "Add user authentication flow",
-    creator: "Jane Smith",
-    group: "Frontend Team",
-    status: "pending",
-    createdAt: "2023-05-15T10:30:00Z",
-  },
-  {
-    id: "mr-2",
-    title: "Fix pagination bug in user list",
-    creator: "John Doe",
-    group: "Backend Team",
-    status: "pending",
-    createdAt: "2023-05-14T14:45:00Z",
-  },
-  {
-    id: "mr-3",
-    title: "Implement dark mode toggle",
-    creator: "Alex Johnson",
-    group: "Frontend Team",
-    status: "pending",
-    createdAt: "2023-05-13T09:15:00Z",
-  },
-]
-interface MR {
+export interface MR {
   _id: string;
   title: string;
   creator: string;
@@ -74,8 +27,8 @@ export default function DashboardPage() {
     throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
   const {  userData, mrData, assignedMRs, userGroups} = authContext;
-  const pendingMRsCount = (mrData as MR[])?.filter(mr => mr.status === "pending").length;
-  const mergedMRsCount = (mrData as MR[])?.filter(mr => mr.status === "merged").length;
+  const pendingMRsCount = (mrData as MR[])?.filter(mr => mr.status === "pending" || mr.status === "open").length;
+  const mergedMRsCount = (mrData as MR[])?.filter(mr => mr.status === "merged" || mr.status === "closed").length;
 
 
 

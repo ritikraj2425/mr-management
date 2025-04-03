@@ -32,7 +32,7 @@ export default function CreateOrJoinGroupPage() {
     throw new Error("AuthContext is not provided. Wrap your component inside <AuthProvider>.");
   }
 
-  const { groupData, jwtToken, refreshToken } = authContext;
+  const { groupData, jwtToken, refreshToken, userData } = authContext;
 
 
   const createGroup = async () => {
@@ -51,7 +51,7 @@ export default function CreateOrJoinGroupPage() {
       );
       if (response.data.redirectUrl) {
         window.location.href = response.data.redirectUrl;
-      }else{
+      } else {
         toast({ title: "error", description: response.data.message });
       }
     } catch (error) {
@@ -60,18 +60,12 @@ export default function CreateOrJoinGroupPage() {
   };
 
 
-
-
-
   const handleCreateGroup = (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
     createGroup()
 
   }
-
-
-
 
   const filteredGroups = groupData?.filter((group: any) =>
   (group?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -98,97 +92,105 @@ export default function CreateOrJoinGroupPage() {
           <TabsTrigger value="create">Create Group</TabsTrigger>
           <TabsTrigger value="join">All Groups</TabsTrigger>
         </TabsList>
+        {
+          userData.isAdmin ?
+            <TabsContent value="create">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Create New Group</CardTitle>
+                  <CardDescription>Create a new group for your team to collaborate on merge requests</CardDescription>
+                </CardHeader>
+                <form onSubmit={handleCreateGroup}>
+                  <CardContent className="space-y-4">
+                    <div className="grid gap-2">
+                      <Label htmlFor="name">Group Name</Label>
+                      <Input
+                        id="name"
+                        placeholder="Enter group name"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        required
+                      />
+                    </div>
 
-        <TabsContent value="create">
-          <Card>
-            <CardHeader>
-              <CardTitle>Create New Group</CardTitle>
-              <CardDescription>Create a new group for your team to collaborate on merge requests</CardDescription>
-            </CardHeader>
-            <form onSubmit={handleCreateGroup}>
-              <CardContent className="space-y-4">
-                <div className="grid gap-2">
-                  <Label htmlFor="name">Group Name</Label>
-                  <Input
-                    id="name"
-                    placeholder="Enter group name"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                  />
-                </div>
+                    <div className="grid gap-2">
+                      <Label htmlFor="description">Description</Label>
+                      <Textarea
+                        id="description"
+                        placeholder="Provide a description of the group"
+                        value={description}
+                        onChange={(e) => setDescription(e.target.value)}
+                        className="min-h-[100px]"
+                        required
+                      />
+                    </div>
+                    <div className="flex flex-col gap-2">
+                      <Label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="platform"
+                          value="github"
+                          checked={platform === "github"}
+                          onChange={() => setPlatform("github")}
+                          className="accent-blue-500"
+                        />
+                        GitHub
+                      </Label>
+                      <Label className="flex items-center gap-2">
+                        <input
+                          type="radio"
+                          name="platform"
+                          value="gitlab"
+                          checked={platform === "gitlab"}
+                          onChange={() => setPlatform("gitlab")}
+                          className="accent-blue-500"
+                        />
+                        GitLab
+                      </Label>
+                      <Label className="flex items-center gap-2 text-gray-500">
+                        <input
+                          type="radio"
+                          name="platform"
+                          value="bitbucket"
+                          disabled
+                          className="accent-gray-500"
+                        />
+                        Bitbucket (Soon)
+                      </Label>
+                    </div>
+                  </CardContent>
+                  <CardFooter className="flex justify-between">
+                    <Button variant="outline" asChild>
+                      <Link href="/dashboard">Cancel</Link>
+                    </Button>
+                    <Button type="submit" disabled={isModal} onClick={() => setIsModal(true)}>
+                      {/* {isSubmitting ? "Creating..." : `Give ${platform} access`} */}
+                      {`Give ${platform} access`}
 
-                <div className="grid gap-2">
-                  <Label htmlFor="description">Description</Label>
-                  <Textarea
-                    id="description"
-                    placeholder="Provide a description of the group"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
-                    className="min-h-[100px]"
-                    required
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <Label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="platform"
-                      value="github"
-                      checked={platform === "github"}
-                      onChange={() => setPlatform("github")}
-                      className="accent-blue-500"
-                    />
-                    GitHub
-                  </Label>
-                  <Label className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="platform"
-                      value="gitlab"
-                      checked={platform === "gitlab"}
-                      onChange={() => setPlatform("gitlab")}
-                      className="accent-blue-500"
-                    />
-                    GitLab
-                  </Label>
-                  <Label className="flex items-center gap-2 text-gray-500">
-                    <input
-                      type="radio"
-                      name="platform"
-                      value="bitbucket"
-                      disabled
-                      className="accent-gray-500"
-                    />
-                    Bitbucket (Soon)
-                  </Label>
-                </div>
-              </CardContent>
-              <CardFooter className="flex justify-between">
-                <Button variant="outline" asChild>
-                  <Link href="/dashboard">Cancel</Link>
-                </Button>
-                <Button type="submit" disabled={isModal} onClick={() => setIsModal(true)}>
-                  {/* {isSubmitting ? "Creating..." : `Give ${platform} access`} */}
-                  {`Give ${platform} access`}
+                    </Button>
+                  </CardFooter>
+                  <Modal isOpen={isModal} onClose={() => setIsModal(false)}>
+                    <>
+                      <div>
+                        Make sure you have all the repositories in your {platform} that you plan to manage through
+                        this group. We will only be requesting read-only access.
+                      </div>
+                      <br></br>
+                      <Button disabled={isSubmitting}>
+                        {isSubmitting ? "Creating..." : `Give ${platform} access`}
+                      </Button>
+                    </>
+                  </Modal>
+                </form>
+              </Card>
+            </TabsContent>
+            :
+            <>
+            Only admins can create group
+            </>
+        }
 
-                </Button>
-              </CardFooter>
-              <Modal isOpen={isModal} onClose={() => setIsModal(false)}>
-                <>
-                  <div>
-                    Make sure you have all the repositories in your {platform} that you plan to manage through
-                    this group. We will only be requesting read-only access.
-                  </div>
-                  <br></br>
-                  <Button disabled={isSubmitting}>
-                    {isSubmitting ? "Creating..." : `Give ${platform} access`}
-                  </Button>
-                </>
-              </Modal>
-            </form>
-          </Card>
-        </TabsContent>
+
 
         <TabsContent value="join">
           <Card>
@@ -210,7 +212,7 @@ export default function CreateOrJoinGroupPage() {
               <div className="space-y-4">
                 {filteredGroups.length > 0 ? (
                   filteredGroups.map((group: any) => (
-                    <Card key={group.id}>
+                    <Card key={group._id}>
                       <CardContent className="p-4">
                         <div className="flex items-start justify-between">
                           <div>
