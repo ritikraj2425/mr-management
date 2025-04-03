@@ -66,11 +66,10 @@ export default function SettingsPage() {
         <p className="text-muted-foreground">Manage your account settings and preferences</p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-4">
+      <Tabs defaultValue="password" className="space-y-4">
         <TabsList>
-          <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="password">Password</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
+          <TabsTrigger value="profile">Profile</TabsTrigger>
         </TabsList>
 
         <TabsContent value="profile">
@@ -86,15 +85,6 @@ export default function SettingsPage() {
                   <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required />
                 </div>
 
-                <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-                </div>
-
-                <div className="grid gap-2">
-                  <Label htmlFor="bio">Bio</Label>
-                  <Textarea id="bio" placeholder="Tell us about yourself" className="min-h-[100px]" />
-                </div>
               </CardContent>
               <CardFooter>
                 <Button type="submit" disabled={isSubmitting}>
@@ -156,7 +146,7 @@ export default function SettingsPage() {
           </Card>
         </TabsContent>
 
-        <TabsContent value="notifications">
+        {/* <TabsContent value="notifications">
           <Card>
             <CardHeader>
               <CardTitle>Notifications</CardTitle>
@@ -197,7 +187,7 @@ export default function SettingsPage() {
               </CardFooter>
             </form>
           </Card>
-        </TabsContent>
+        </TabsContent> */}
       </Tabs>
     </div>
   )

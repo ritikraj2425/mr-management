@@ -26,7 +26,7 @@ export default function DashboardPage() {
   if (!authContext) {
     throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
-  const {  userData, mrData, assignedMRs, userGroups} = authContext;
+  const { userData, mrData, assignedMRs, userGroups } = authContext;
   const pendingMRsCount = (mrData as MR[])?.filter(mr => mr.status === "pending" || mr.status === "open").length;
   const mergedMRsCount = (mrData as MR[])?.filter(mr => mr.status === "merged" || mr.status === "closed").length;
 
@@ -36,12 +36,33 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div className="flex items-center justify-between">
         <h2 className="text-3xl font-bold tracking-tight">Welcome, {userData?.name}</h2>
-        <Button asChild>
-          <Link href="/dashboard/merge-requests/new">
-            <PlusCircle className="mr-2 h-4 w-4" />
-            Create New MR/PR
-          </Link>
-        </Button>
+        <div className="space-x-2 md:flex grid">
+          <Button asChild>
+            <Link href="/dashboard/merge-requests/new">
+              <PlusCircle className="mr-2 h-4 w-4" />
+              Create New MR/PR
+            </Link>
+          </Button>
+          {
+            userData.isAdmin ?
+              <>
+                <Button asChild>
+                  <Link href="/dashboard/organization/invite">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Member(Org)
+                  </Link>
+                </Button>
+                <Button asChild>
+                  <Link href="/dashboard/groups/invite">
+                    <PlusCircle className="mr-2 h-4 w-4" />
+                    Add Member(Group)
+                  </Link>
+                </Button>
+              </> :
+              <></>
+          }
+
+        </div>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -82,7 +103,7 @@ export default function DashboardPage() {
           </Button>
         </div>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {userGroups?.slice(0,2)?.map((group: any) => (
+          {userGroups?.slice(0, 2)?.map((group: any) => (
             <GroupCard key={group._id} group={group} />
           ))}
           <Card className="flex h-full flex-col items-center justify-center border-dashed">

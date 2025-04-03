@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar"
 import { useContext } from "react"
 import { AuthContext } from "@/hooks/use-context"
+import { Label } from "./ui/label"
 
 export default function DashboardSidebar() {
   const pathname = usePathname()
@@ -23,8 +24,8 @@ export default function DashboardSidebar() {
   if (!authContext) {
     throw new Error("ThemeContext is not provided. Wrap your component inside <ThemeProvider>.");
   }
-  const { isAuthenticated,userData,groupData,organizationData } = authContext;
-  
+  const { userData, organizationData } = authContext;
+
 
   return (
     <SidebarProvider>
@@ -34,6 +35,7 @@ export default function DashboardSidebar() {
             <GitMerge className="h-6 w-6 text-primary" />
             <span className="text-xl ">{organizationData?.orgName}</span>
           </Link>
+            <Label>{userData.isAdmin? "Admin Dashboard" : ""}</Label>
         </SidebarHeader>
         <SidebarContent>
           <SidebarMenu>
@@ -84,6 +86,17 @@ export default function DashboardSidebar() {
                   <span>Create MR/PR</span>
                 </Link>
               </SidebarMenuButton>
+              {
+                userData.isAdmin ?
+                  <SidebarMenuButton asChild isActive={pathname?.startsWith("/dashboard/allgroups")}>
+                    <Link href="/dashboard/allgroups">
+                      <Users className="h-4 w-4" />
+                      <span>All Groups</span>
+                    </Link>
+                  </SidebarMenuButton> :
+                  <></>
+              }
+
             </SidebarMenuItem>
           </SidebarMenu>
         </SidebarContent>

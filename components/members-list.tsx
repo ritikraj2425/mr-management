@@ -66,7 +66,7 @@ export function MembersList({ members, isAdmin }: { members: Member[]; isAdmin: 
                       <DropdownMenuLabel>Actions</DropdownMenuLabel>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem>Edit Role</DropdownMenuItem>
-                      <DropdownMenuItem>Remove from Group</DropdownMenuItem>
+                      <DropdownMenuItem>Remove</DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                 </TableCell>

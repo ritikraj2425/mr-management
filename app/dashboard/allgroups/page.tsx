@@ -4,17 +4,20 @@ import Loading from "@/components/ui/loading";
 import { AuthContext } from "@/hooks/use-context";
 import { useContext } from "react";
 
-export default function Groups() {
+export default function AllGroups() {
     const authContext = useContext(AuthContext);
 
     if (!authContext) {
         throw new Error("AuthContext is not provided. Wrap your component inside <AuthProvider>.");
     }
 
-    const { userGroups } = authContext;
+    const { groupData , userData} = authContext;
 
-    if (!userGroups) {
+    if (!groupData || !userData) {
         return <Loading />
+    }
+    if(!userData?.isAdmin){
+        return <>You are not authorized</>
     }
 
     return <>
@@ -23,9 +26,9 @@ export default function Groups() {
                 <h3 className="text-xl font-semibold">Your Groups</h3>
             </div>
             {
-                userGroups ?
+                groupData ?
                     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                        {userGroups?.map((group: any) => (
+                        {groupData?.map((group: any) => (
                             <GroupCard key={group._id} group={group} />
                         ))}
                     </div>
